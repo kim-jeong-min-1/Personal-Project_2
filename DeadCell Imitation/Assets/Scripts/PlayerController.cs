@@ -14,33 +14,32 @@ public class PlayerStet
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("플레이어 스텟")]
     [SerializeField]
     PlayerStet playerStet;
 
     private Rigidbody2D rb;
     private Animator anim;
-
-    [Space()]
-    [Header("그라운드 체크")]
     [SerializeField]
     private Transform groundCheckPoint;
 
     public LayerMask ground;
 
     private bool isRight = true;
-    private bool isWalking;
     private bool isGrounded = true;
+    private bool isWalking;
+    private bool isRolling;
 
     [SerializeField]
     private float groundCheckRadious;
-    [Space()]
+    private float moveDirection;
+    private int playerFoward;
 
     public float jumpForce;
-    public float dashSpeed;
-
-    private float moveDirection;
     private float jumpCount;
+
+    public float dashSpeed;
+    public float dashCoolDown;
+    private float lastdash;
 
     // Start is called before the first frame update
     void Start()
@@ -55,6 +54,7 @@ public class PlayerController : MonoBehaviour
         InputSystem();
         MovementDirectionCheck();
         AnimationsCheck();
+        GroundCheck();
     }
 
     private void FixedUpdate()
@@ -65,12 +65,6 @@ public class PlayerController : MonoBehaviour
     private void InputSystem()
     {
         moveDirection = Input.GetAxisRaw("Horizontal");
-        GroundCheck();
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Attack();
-        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -86,7 +80,8 @@ public class PlayerController : MonoBehaviour
     private void MovementDirectionCheck()
     {
         isRight = (moveDirection > 0) ? true : false;
-        isWalking = (rb.velocity.x != 0) ? true : false;
+        isWalking = (rb.velocity.x != 0 && !isRolling) ? true : false;
+        playerFoward = (isRight) ? 1 : -1;
 
         if (moveDirection == 0) return;
 
@@ -103,13 +98,15 @@ public class PlayerController : MonoBehaviour
     private void AnimationsCheck()
     {
         anim.SetBool("isWalking", isWalking);
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetFloat("velocityY", rb.velocity.y);
+        anim.SetBool("isRolling", isRolling);
     }
-
     private void GroundCheck()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadious, ground);
 
-        if (isGrounded)
+        if (isGrounded && rb.velocity.y <= 0)
         {
             jumpCount = playerStet.JumpCount;
         }
@@ -118,11 +115,6 @@ public class PlayerController : MonoBehaviour
     private void PlayerMovement()
     {
         rb.velocity = new Vector2(moveDirection * playerStet.Speed, rb.velocity.y);
-    }
-
-    private void Attack()
-    {
-        
     }
 
     private void Jump()
@@ -134,10 +126,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    #region 구르기
     private void Rolling()
     {
-        rb.AddForce(new Vector2(dashSpeed, rb.velocity.y), ForceMode2D.Impulse); 
+        if(Time.time < lastdash + dashCoolDown) return;
+
+        isRolling = true;
+        lastdash = Time.time;
+        StartCoroutine(RollingSystem());
     }
+    private IEnumerator RollingSystem()
+    {
+        rb.velocity = new Vector2(dashSpeed * playerFoward, rb.velocity.y);
+        yield return new WaitForSeconds(0.75f);
+        isRolling = false;
+    }
+    #endregion
 
     private void OnDrawGizmos()
     {
