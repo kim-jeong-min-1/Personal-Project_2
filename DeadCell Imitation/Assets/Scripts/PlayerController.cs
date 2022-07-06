@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,12 +14,15 @@ public class PlayerStet
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("플레이어 스텟")]
     [SerializeField]
     PlayerStet playerStet;
 
     private Rigidbody2D rb;
     private Animator anim;
 
+    [Space()]
+    [Header("그라운드 체크")]
     [SerializeField]
     private Transform groundCheckPoint;
 
@@ -28,12 +32,16 @@ public class PlayerController : MonoBehaviour
     private bool isWalking;
     private bool isGrounded = true;
 
-    private float moveDirection;
+    [SerializeField]
+    private float groundCheckRadious;
+    [Space()]
 
     public float jumpForce;
+    public float dashSpeed;
+
+    private float moveDirection;
     private float jumpCount;
 
-    public float groundCheckRadious;
     // Start is called before the first frame update
     void Start()
     {
@@ -47,7 +55,6 @@ public class PlayerController : MonoBehaviour
         InputSystem();
         MovementDirectionCheck();
         AnimationsCheck();
-        GroundCheck();
     }
 
     private void FixedUpdate()
@@ -58,10 +65,21 @@ public class PlayerController : MonoBehaviour
     private void InputSystem()
     {
         moveDirection = Input.GetAxisRaw("Horizontal");
+        GroundCheck();
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Attack();
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            Rolling();
         }
     }
 
@@ -89,7 +107,7 @@ public class PlayerController : MonoBehaviour
 
     private void GroundCheck()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadious);
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadious, ground);
 
         if (isGrounded)
         {
@@ -102,6 +120,11 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(moveDirection * playerStet.Speed, rb.velocity.y);
     }
 
+    private void Attack()
+    {
+        
+    }
+
     private void Jump()
     {
         if(jumpCount > 0)
@@ -111,6 +134,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Rolling()
+    {
+        rb.AddForce(new Vector2(dashSpeed, rb.velocity.y), ForceMode2D.Impulse); 
+    }
 
     private void OnDrawGizmos()
     {

@@ -274,7 +274,7 @@ Transform:
   m_Children:
   - {fileID: 726774971}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &140596250
 MonoBehaviour:
@@ -292,13 +292,14 @@ MonoBehaviour:
     HP: 100
     AtkDmg: 20
     Speed: 8
-    JumpCount: 2
+    JumpCount: 1
   groundCheckPoint: {fileID: 726774971}
   ground:
     serializedVersion: 2
     m_Bits: 64
-  jumpForce: 10
   groundCheckRadious: 0.5
+  jumpForce: 10
+  dashSpeed: 8
 --- !u!1 &358822230
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,7 +429,7 @@ Transform:
   m_LocalScale: {x: 200, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
