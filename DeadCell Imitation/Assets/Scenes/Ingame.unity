@@ -299,7 +299,7 @@ MonoBehaviour:
     m_Bits: 64
   groundCheckRadious: 0.35
   jumpForce: 10
-  dashSpeed: 50
+  dashSpeed: 8
   dashCoolDown: 0.9
 --- !u!1 &358822230
 GameObject:
@@ -553,7 +553,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 726774970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.025, y: 0.2, z: 0}
+  m_LocalPosition: {x: -0.025, y: 0.17, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 140596249}

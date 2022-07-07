@@ -28,11 +28,12 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = true;
     private bool isWalking;
     private bool isRolling;
+    private bool isAttack;
 
     [SerializeField]
     private float groundCheckRadious;
     private float moveDirection;
-    private int playerFoward;
+    private int playerFoward = 1;
 
     public float jumpForce;
     private float jumpCount;
@@ -79,11 +80,11 @@ public class PlayerController : MonoBehaviour
 
     private void MovementDirectionCheck()
     {
-        isRight = (moveDirection > 0) ? true : false;
         isWalking = (rb.velocity.x != 0 && !isRolling) ? true : false;
-        playerFoward = (isRight) ? 1 : -1;
 
         if (moveDirection == 0) return;
+        isRight = (moveDirection > 0) ? true : false;
+        playerFoward = (isRight) ? 1 : -1;
 
         if(!isRight)
         {
@@ -102,6 +103,7 @@ public class PlayerController : MonoBehaviour
         anim.SetFloat("velocityY", rb.velocity.y);
         anim.SetBool("isRolling", isRolling);
     }
+
     private void GroundCheck()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadious, ground);
@@ -114,6 +116,7 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMovement()
     {
+        if (isRolling == true) return;
         rb.velocity = new Vector2(moveDirection * playerStet.Speed, rb.velocity.y);
     }
 
@@ -138,7 +141,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator RollingSystem()
     {
         rb.velocity = new Vector2(dashSpeed * playerFoward, rb.velocity.y);
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(0.5f);
         isRolling = false;
     }
     #endregion
