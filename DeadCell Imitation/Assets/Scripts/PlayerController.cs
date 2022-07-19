@@ -38,9 +38,11 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     private float jumpCount;
 
-    public float dashSpeed;
-    public float dashCoolDown;
+    [SerializeField] private float afterImageDistance;
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private float dashCoolDown;
     private float lastdash;
+    private float lastImagePosX;
 
     // Start is called before the first frame update
     void Start()
@@ -56,6 +58,7 @@ public class PlayerController : MonoBehaviour
         MovementDirectionCheck();
         AnimationsCheck();
         GroundCheck();
+        CheckAfterImage();
     }
 
     private void FixedUpdate()
@@ -136,13 +139,27 @@ public class PlayerController : MonoBehaviour
 
         isRolling = true;
         lastdash = Time.time;
+        rb.AddForce(new Vector2(dashSpeed * playerFoward, rb.velocity.y), ForceMode2D.Impulse);
+
+        AfterImagePool.Inst.ReturnPool();
+        lastImagePosX = transform.position.x;
         StartCoroutine(RollingSystem());
     }
     private IEnumerator RollingSystem()
     {
-        rb.velocity = new Vector2(dashSpeed * playerFoward, rb.velocity.y);
         yield return new WaitForSeconds(0.5f);
         isRolling = false;
+    }
+    private void CheckAfterImage()
+    {
+        if (isRolling)
+        {
+            if(Mathf.Abs(transform.position.x - lastImagePosX) > afterImageDistance)
+            {
+                AfterImagePool.Inst.ReturnPool();
+                lastImagePosX = transform.position.x;
+            }
+        }
     }
     #endregion
 
